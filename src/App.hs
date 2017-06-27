@@ -11,6 +11,6 @@ initializeNotes = foldMap newNote ["Learn Reflex", "Do laundry"]
 
 app :: MonadWidget t m => m ()
 app = el "div" $ do
-  _ <- button "+" >>= onEvent (\_ -> putStrLn' "add note")
-  _ <- notes initializeNotes
+  addNote <- button "+" >>= onEvent (\_ -> liftIO $ newNote "New Note")
+  _ <- notes initializeNotes addNote
   blank

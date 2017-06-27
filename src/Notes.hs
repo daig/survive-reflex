@@ -14,9 +14,10 @@ type Notes = Map Id Note
 newNote :: Note -> IO Notes
 newNote n = ffor newUnique (=: n)
 
-notes :: MonadWidget t m => IO Notes -> m (Dynamic t Notes)
-notes initializeNotes = do
-  initialNotes <- constDyn <$> liftIO initializeNotes
-  _ <- el "ul" $ list initialNotes $ \note ->
+notes :: MonadWidget t m => IO Notes -> Event t Notes -> m (Dynamic t Notes)
+notes initializeNotes addNote = do
+  initialNotes <- liftIO initializeNotes
+  notesDyn <- foldDyn Map.union initialNotes addNote
+  _ <- el "ul" $ list notesDyn $ \note ->
          el "li" $ dynText note
-  return initialNotes
+  return notesDyn
