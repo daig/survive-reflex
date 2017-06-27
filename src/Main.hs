@@ -1,6 +1,6 @@
 module Main where
 import Reflex.Dom
-import Notes
+import App
 
 main :: IO ()
-main = mainWidget notes
+main = mainWidget app
