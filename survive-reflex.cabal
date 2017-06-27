@@ -23,7 +23,7 @@ executable kanban
   hs-source-dirs:      src
   default-language:    Haskell2010
 library
-  exposed-modules: App,Notes
+  exposed-modules: App,Notes,Note
   build-depends:       base >=4.8 && <5
                       ,reflex-dom
                       ,text
