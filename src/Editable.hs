@@ -8,10 +8,10 @@ import Data.Semigroup ((<>))
 
 editable :: MonadWidget t m => Event t () -> Bool -> Dynamic t Text -> m (Dynamic t Bool)
 editable startEdit initialEditable value = do
-  rec finishEdit <- (dyn $ editing <&> \editingNow -> 
-                 (if editingNow then edit value else pure never) <*
-                 (el "span" $ text "value: " >> dynText value))
-                >>= switchPromptly never
+  rec finishEdit <- (dyn $ editing <&> \case
+                      True -> edit value
+                      False -> (el "span" $ text "value: " >> dynText value) &> never)
+                    >>= switchPromptly never
       editing <- holdDyn initialEditable $ mergeWith (||) [True <$ startEdit, False <$ finishEdit]
   return editing
 
