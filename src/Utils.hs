@@ -14,5 +14,10 @@ putStrLn' t = liftIO $ putStrLn (T.unpack t)
 onEvent :: PerformEvent t m => (a -> Performable m b) -> Event t a -> m (Event t b)
 onEvent m = performEvent . fmap m
 
+(<&>) :: Functor f => f a -> (a -> b) -> f b
+a <&> f = f <$> a
+(&>) :: Functor f => f a -> b -> f b
+fa &> b = b <$ fa
+
 mergeDynFoldableEvents :: (Reflex t, Semigroup a, Foldable f) => Dynamic t (f (Event t a)) -> Event t a
 mergeDynFoldableEvents = switchPromptlyDyn . fmap fold

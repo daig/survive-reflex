@@ -20,5 +20,7 @@ notes initializeNotes (fmap (Endo . Map.union) -> addNote) = do
   rec notesDyn <- foldDyn appEndo initialNotes (addNote <> deleteNote)
       deleteNote <- fmap mergeDynFoldableEvents $
         el "ul" $ listWithKey notesDyn $ \i n ->
-          el "li" $ (Endo (Map.delete i) <$) <$> note n
+          el "li" $ note $ do
+            el "span" $ dynText n
+            button "x" <&> (&> Endo (Map.delete i))
   return notesDyn
