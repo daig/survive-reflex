@@ -1,9 +1,10 @@
 module Notes where
+import Utils
 import Note
 import Reflex.Dom
 import Data.Map (Map)
 import qualified Data.Map as Map
-import Data.Semigroup ((<>))
+import Data.Semigroup ((<>),Endo(..))
 import Data.Unique
 import Control.Monad.Trans (MonadIO(..))
 
@@ -14,9 +15,10 @@ newNote :: Note -> IO Notes
 newNote n = ffor newUnique (=: n)
 
 notes :: MonadWidget t m => IO Notes -> Event t Notes -> m (Dynamic t Notes)
-notes initializeNotes addNote = do
+notes initializeNotes (fmap (Endo . Map.union) -> addNote) = do
   initialNotes <- liftIO initializeNotes
-  notesDyn <- foldDyn Map.union initialNotes addNote
-  _ <- el "ul" $ list notesDyn $ \n ->
-         el "li" $ note n
+  rec notesDyn <- foldDyn appEndo initialNotes (addNote <> deleteNote)
+      deleteNote <- fmap mergeDynFoldableEvents $
+        el "ul" $ listWithKey notesDyn $ \i n ->
+          el "li" $ (Endo (Map.delete i) <$) <$> note n
   return notesDyn
