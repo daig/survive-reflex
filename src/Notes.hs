@@ -1,6 +1,7 @@
 module Notes where
 import Utils
 import Note
+import Editable
 import Reflex.Dom
 import Data.Map (Map)
 import qualified Data.Map as Map
@@ -22,6 +23,6 @@ notes initializeNotes (fmap (Endo . Map.union) -> addNote) = do
       deleteNote <- fmap mergeDynFoldableEvents $
         el "ul" $ listWithKey notesDyn $ \i n ->
           el "li" $ note $ do
-            el "span" $ dynText (task <$> n)
+            editable (n <&> editing) (n <&> task)
             button "x" <&> (&> Endo (Map.delete i))
   return notesDyn
