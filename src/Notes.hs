@@ -11,12 +11,11 @@ type Id = Unique
 type Note = Text
 type Notes = Map Id Note
 
-initializeNotes :: IO Notes
-initializeNotes = foldMap newNote ["Learn Reflex", "Do laundry"]
-  where newNote n = ffor newUnique (=: n)
+newNote :: Note -> IO Notes
+newNote n = ffor newUnique (=: n)
 
-notes :: MonadWidget t m => m ()
-notes = do
+notes :: MonadWidget t m => IO Notes -> m ()
+notes initializeNotes = do
   initialNotes <- constDyn <$> liftIO initializeNotes
   (() <$) $ el "ul" $
     list initialNotes $ \note ->
