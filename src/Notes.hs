@@ -7,12 +7,13 @@ import qualified Data.Map as Map
 import Data.Semigroup ((<>),Endo(..))
 import Data.Unique
 import Control.Monad.Trans (MonadIO(..))
+import Data.Text (Text)
 
 type Id = Unique
 type Notes = Map Id Note
 
-newNote :: Note -> IO Notes
-newNote n = ffor newUnique (=: n)
+newNote :: Text -> IO Notes
+newNote t = ffor newUnique (=: Note t True)
 
 notes :: MonadWidget t m => IO Notes -> Event t Notes -> m (Dynamic t Notes)
 notes initializeNotes (fmap (Endo . Map.union) -> addNote) = do
@@ -21,6 +22,6 @@ notes initializeNotes (fmap (Endo . Map.union) -> addNote) = do
       deleteNote <- fmap mergeDynFoldableEvents $
         el "ul" $ listWithKey notesDyn $ \i n ->
           el "li" $ note $ do
-            el "span" $ dynText n
+            el "span" $ dynText (task <$> n)
             button "x" <&> (&> Endo (Map.delete i))
   return notesDyn
