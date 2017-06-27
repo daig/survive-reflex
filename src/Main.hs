@@ -1,4 +1,6 @@
 module Main where
+import Reflex.Dom
+import Notes
 
 main :: IO ()
-main = return ()
+main = mainWidget notes
