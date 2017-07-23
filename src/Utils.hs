@@ -19,8 +19,6 @@ onEvent m = performEvent . fmap m
 a <&> f = f <$> a
 (&>) :: Functor f => f a -> b -> f b
 fa &> b = b <$ fa
-(<^>) :: Applicative f => f a -> f b -> f (a,b)
-fa <^> fb = (,) <$> fa <*> fb
 
 sampleDyn :: MonadWidget t m => Dynamic t a -> m a
 sampleDyn = sample . current

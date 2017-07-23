@@ -5,7 +5,7 @@ import Editable
 import Reflex.Dom
 import Data.Map (Map)
 import qualified Data.Map as Map
-import Data.Semigroup ((<>),Endo(..))
+import Data.Semigroup (Semigroup((<>)),Endo(..))
 import Data.Unique
 import Control.Monad.Trans (MonadIO(..))
 import Data.Text (Text)
