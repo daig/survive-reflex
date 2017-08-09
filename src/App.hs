@@ -1,9 +1,16 @@
 module App where
 import Base
+import Data.Unique
 
 app :: MonadWidget t m => m ()
-app = ul_ $ forM_ messages $ li_ . text
+{-app = return ()-}
+app = do
+  messages <- initMessages
+  _ <- ul_ $ listWithKey (constDyn messages) $ \_ v ->
+    li_ $ dynText v
+  return ()
 
+  
 
-messages :: [Text]
-messages = ["Bend","Cheese it"] 
+initMessages :: MonadIO m => m (Map Unique Text)
+initMessages = liftIO $ foldMap (\x -> newUnique <&> (=: x)) ["Bend","Cheese it"] 
