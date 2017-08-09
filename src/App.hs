@@ -1,7 +1,9 @@
 module App where
-import Reflex.Dom.Core
+import Base
 
 app :: MonadWidget t m => m ()
-app = return ()
+app = ul_ $ forM_ messages $ li_ . text
 
 
+messages :: [Text]
+messages = ["Bend","Cheese it"] 
