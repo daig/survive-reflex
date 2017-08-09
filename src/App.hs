@@ -1,24 +1,30 @@
+{-# language RecursiveDo #-}
 module App where
 import Base
-import Data.Unique
 import qualified Data.Map as M
 
 app :: MonadWidget t m => m ()
 {-app = return ()-}
 app = do
   initNotes <- getNotes
-
-  addNote <- performEvent . (liftIO newUnique <$) =<< button "+"
-  notes <- foldDyn (\k m -> M.insert k "new note" m) initNotes addNote
-  _ <- ul_ $ listWithKey notes $ (\_ v -> li_ $ renderNote v)
+  addNote <- performEvent . (insNewNote <$) =<< button "+"
+  rec
+    notes <- foldDyn appEndo initNotes (addNote <> deleteNote)
+    (_,deleteNote) <- runEventWriterT $
+      ul_ $ listWithKey notes $ \k v ->
+        li_ $ renderNote k v >>= tellEvent 
   return ()
 
-renderNote :: MonadWidget t m => Dynamic t Text -> m ()
-renderNote = dynText
+renderNote :: MonadWidget t m => Id -> Dynamic t Text -> m (Event t (Endo Notes))
+renderNote k v = div_ $ do
+  span_ $ dynText v
+  (Endo (M.delete k) <$) <$> button "x"
 
 type Id = Unique
-instance Show Unique where show = show . hashUnique
 type Notes = Map Id Text
+
+insNewNote :: MonadIO m => m (Endo Notes)
+insNewNote = liftIO $ Endo <$> newUnique <&> (`M.insert` "new note")
 
 getNotes :: MonadIO m => m Notes
 getNotes = liftIO $ foldMap (\x -> newUnique <&> (=: x)) ["Bend","Cheese it"] 
