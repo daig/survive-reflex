@@ -11,45 +11,30 @@ app = do
   rec
     notes <- foldDyn appEndo initNotes (addNote <> deleteNote)
     (_,deleteNote) <- runEventWriterT $
-      ul_ $ listWithKey notes $ \k v ->
-        li_ $ renderNote k v
+      ul_ $ listWithKey notes renderNote
   return ()
 
 renderNote :: (MonadWidget t m, EventWriter t (Endo Notes) m)
            => Id -> Dynamic t Text -> m ()
-renderNote k note = do
+renderNote k note = li_ $ do
   rec
     setEditing <- switchPromptly' <=< dyn $ editing <&> \case
-      True -> do
-        initText <- sample (current note)
-        t <- textInput $ def & textInputConfig_initialValue .~ initText
-        let editedValue = (_textInput_value t) `tagPromptlyDyn` keypress Enter t
-        tellEvent (setNote k <$> editedValue)
-        return $ False <$ editedValue
-      False -> do
-        (e, clickDelete) <- div' $ do
-          span_ $ dynText note
-          tellEvent . (Endo (M.delete k) <$) =<< button "x"
-        return $ True <$ domEvent Click e
+      True -> (False <$) <$> renderEdit
+      False -> (True <$) <$> renderStaticNote
     editing <- foldDyn const False setEditing
   return ()
-
-
-renderStaticNote :: MonadWidget t m => Dynamic t Text -> m (Event t (),Event t ())
-renderStaticNote v = do
-  (e,clickDelete) <- div' $ do
-    span_ $ dynText v
-    button "x"
-  return (() <$ domEvent Click e,clickDelete)
-
-{-renderNote :: MonadWidget t m => Dynamic t Text -> m (Event t ())-}
-{-renderNote = do-}
-  
-
-renderInput :: MonadWidget t m => Id -> Dynamic t Text -> m (TextInput t)
-renderInput _ note = do
-  initText <- sample (current note)
-  textInput $ def & textInputConfig_initialValue .~ initText
+  where
+    renderEdit = do
+      initText <- sample (current note)
+      t <- textInput $ def & textInputConfig_initialValue .~ initText
+      let editedValue = (_textInput_value t) `tagPromptlyDyn` keypress Enter t
+      tellEvent (setNote k <$> editedValue)
+      return editedValue
+    renderStaticNote = do
+        (e, _) <- div' $ do
+          span_ $ dynText note
+          tellEvent . (Endo (M.delete k) <$) =<< button "x"
+        return $ domEvent Click e
 
 type Id = Unique
 data Editing = Editing | NotEditing

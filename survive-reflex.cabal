@@ -29,7 +29,7 @@ library
                       ,template-haskell
                       ,lens
   default-language:    Haskell2010
-  default-extensions:  OverloadedStrings,ViewPatterns,LambdaCase,FlexibleContexts
+  default-extensions:  OverloadedStrings,ViewPatterns,LambdaCase,FlexibleContexts,TypeFamilies
 
 --executable kanban
   --main-is:             Main.hs
