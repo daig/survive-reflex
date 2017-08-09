@@ -27,8 +27,9 @@ library
                       ,text
                       ,containers
                       ,template-haskell
+                      ,lens
   default-language:    Haskell2010
-  default-extensions:  OverloadedStrings,ViewPatterns
+  default-extensions:  OverloadedStrings,ViewPatterns,LambdaCase,FlexibleContexts
 
 --executable kanban
   --main-is:             Main.hs
