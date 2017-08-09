@@ -18,16 +18,20 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   exposed-modules:     App
-  build-depends:        base >=4.8 && <5
-                      ,reflex-dom-core
-                      ,reflex
-                      ,jsaddle-warp
-  default-language:    Haskell2010
-
-executable kanban
-  main-is:             Main.hs
-  -- other-modules:       
-  -- other-extensions:    
+                      ,Reflex.Tags
   build-depends:       base >=4.8 && <5
-  hs-source-dirs:      src
+                      ,reflex
+                      ,reflex-dom-core
+                      ,jsaddle-warp
+                      ,text
+                      ,template-haskell
   default-language:    Haskell2010
+  default-extensions:  OverloadedStrings
+
+--executable kanban
+  --main-is:             Main.hs
+  ---- other-modules:       
+  ---- other-extensions:    
+  --build-depends:       base >=4.8 && <5
+  --hs-source-dirs:      src
+  --default-language:    Haskell2010
