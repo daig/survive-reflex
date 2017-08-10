@@ -22,6 +22,8 @@ import Control.Lens as X hiding (element)
 import qualified Data.Text.Lazy as LT
 import qualified Data.Text.Encoding as T
 import qualified Clay as P (render)
+import Control.Arrow as X ((&&&))
+import Data.Maybe as X
 
 show' :: Show a => a -> Text
 show' = T.pack . show

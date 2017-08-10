@@ -5,39 +5,45 @@ import qualified Data.Map as M
 import JSDOM.HTMLElement (focus)
 {-import GHCJS.DOM.HTMLElement (focus)-}
 
-app :: MonadWidget t m => m ()
-{-app = return ()-}
-app = do
-  initNotes <- getNotes
-  addNote <- performEvent . (insNewNote <$) =<< buttonClass "+" "add"
+noteWidget :: MonadWidget t m
+           => Dynamic t Text
+           -> m (Event t Text -- Entered Text
+                ,Event t ())  -- Clicked X
+noteWidget note = do
   rec
-    notes <- foldDyn appEndo initNotes (addNote <> deleteNote)
-    (_,deleteNote) <- runEventWriterT $
-      elClass "ul" "notes" $ listWithKey notes renderNote
-  return ()
-
-renderNote :: (MonadWidget t m, EventWriter t (Endo Notes) m)
-           => Id -> Dynamic t Text -> m ()
-renderNote k note = li_ $ do
-  rec (e,_) <- elClass' "div" "note" $ do
-        rec setEditing <- switchPromptly' <=< dyn $ editing <&> \case
-                True -> (False <$) <$> renderEdit
-                False -> (True <$ domEvent Click e) <$ renderStaticNote
-            editing <- foldDyn const False setEditing
-        tellEvent . (Endo (M.delete k) <$) =<< buttonClass "x" "delete"
-  blank
+    (e,r) <- elClass' "div" "note" $ do
+      rec
+        updateNote <- switchPromptly' <=< dyn $ editing <&> \case
+          True -> fmap Just <$> renderEdit
+          False -> (Nothing <$ domEvent Click e) <$ renderStaticNote
+        editing <- foldDyn const False (isNothing <$> updateNote)
+      (fforMaybe updateNote id,) <$> buttonClass "X" "delete"
+  return r
   where
+    renderStaticNote = elClass "span" "editable value" $ dynText note
     renderEdit = do
       initText <- sample (current note)
       t <- textInput $ def & textInputConfig_initialValue .~ initText
                            & textInputConfig_attributes .~ (constDyn $ "class" =: "editable edit")
-      pb <- getPostBuild >>= delay 0.1
-      performEvent $ (focus (_textInput_element t) <$) pb
+      performEvent =<< (focus (_textInput_element t) <$) <$> (delay 0.1 =<< getPostBuild)
       let endEdit = leftmost [keypress Enter t, domEvent Blur t]
-      let editedValue = (_textInput_value t) `tagPromptlyDyn` endEdit
-      tellEvent (setNote k <$> editedValue)
-      return editedValue
-    renderStaticNote = elClass "span" "editable value" $ dynText note
+      return $ _textInput_value t `tagPromptlyDyn` endEdit
+
+        
+
+app :: MonadWidget t m => m ()
+{-app = return ()-}
+app = do
+  initNotes <- getNotes
+  rec
+    (notes,updates) <- runEventWriterT $ do
+      tellEvent =<< performEvent . (insNewNote <$) =<< buttonClass "+" "add"
+      elClass "ul" "notes" $ listWithKey notes $ \k n -> do
+        (enterNote,clickDelete) <- noteWidget n
+        tellEvent $ Endo (M.delete k) <$ clickDelete
+        tellEvent $ Endo . (M.insert k) <$> enterNote
+      foldDyn appEndo initNotes updates
+  blank
 
 type Id = Unique
 data Editing = Editing | NotEditing

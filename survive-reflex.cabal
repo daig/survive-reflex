@@ -39,7 +39,12 @@ library
   --if impl(ghcjs)
     --build-depends:      ghcjs-dom-jsffi
   default-language:    Haskell2010
-  default-extensions:  OverloadedStrings,ViewPatterns,LambdaCase,FlexibleContexts,TypeFamilies
+  default-extensions:  OverloadedStrings
+                      ,ViewPatterns
+                      ,LambdaCase
+                      ,FlexibleContexts
+                      ,TypeFamilies
+                      ,TupleSections
 
 executable kanban
   main-is:             Main.hs
@@ -62,4 +67,9 @@ executable kanban
     --build-depends:      ghcjs-dom-jsffi
   hs-source-dirs:      src
   default-language:    Haskell2010
-  default-extensions:  OverloadedStrings,ViewPatterns,LambdaCase,FlexibleContexts,TypeFamilies
+  default-extensions:  OverloadedStrings
+                      ,ViewPatterns
+                      ,LambdaCase
+                      ,FlexibleContexts
+                      ,TypeFamilies
+                      ,TupleSections
