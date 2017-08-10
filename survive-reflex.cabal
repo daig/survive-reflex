@@ -20,7 +20,7 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     App
+  exposed-modules:     App,Notes
                       ,Reflex.Tags
                       ,Base
   build-depends:       base >=4.8 && <5
@@ -45,6 +45,7 @@ library
                       ,FlexibleContexts
                       ,TypeFamilies
                       ,TupleSections
+                      ,RecursiveDo
 
 executable kanban
   main-is:             Main.hs
@@ -73,3 +74,4 @@ executable kanban
                       ,FlexibleContexts
                       ,TypeFamilies
                       ,TupleSections
+                      ,RecursiveDo

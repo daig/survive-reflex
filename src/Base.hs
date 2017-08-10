@@ -24,6 +24,7 @@ import qualified Data.Text.Encoding as T
 import qualified Clay as P (render)
 import Control.Arrow as X ((&&&))
 import Data.Maybe as X
+import Control.Monad.Fix as X (mfix)
 
 show' :: Show a => a -> Text
 show' = T.pack . show
