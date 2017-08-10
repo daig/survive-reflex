@@ -1,9 +1,10 @@
 module Base
   (module X
-  ,(<&>)
   ,show',display'
   ,newUnique
   ,switchPromptly'
+  ,buttonClass
+  ,renderCss
   ) where
 
 import Reflex.Tags as X
@@ -18,6 +19,9 @@ import Data.Monoid as X hiding (Alt)
 import qualified Data.Unique as P
 import Data.Unique as X (Unique)
 import Control.Lens as X hiding (element)
+import qualified Data.Text.Lazy as LT
+import qualified Data.Text.Encoding as T
+import qualified Clay as P (render)
 
 show' :: Show a => a -> Text
 show' = T.pack . show
@@ -30,3 +34,10 @@ instance Show Unique where show = show . P.hashUnique
 
 switchPromptly' :: (Reflex t, MonadHold t m) => Event t (Event t a) -> m (Event t a)
 switchPromptly' = switchPromptly never
+
+buttonClass :: MonadWidget t m => Text -> Text -> m (Event t ())
+buttonClass t c = do
+  (e, _) <- elClass' "button" c $ text t
+  return $ domEvent Click e
+
+renderCss = T.encodeUtf8 . LT.toStrict . P.render

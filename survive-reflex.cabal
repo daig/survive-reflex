@@ -33,6 +33,9 @@ library
                       ,containers
                       ,template-haskell
                       ,lens
+                      ,clay
+                      ,file-embed
+                      ,bytestring
   --if impl(ghcjs)
     --build-depends:      ghcjs-dom-jsffi
   default-language:    Haskell2010
@@ -52,6 +55,9 @@ executable kanban
                       ,containers
                       ,template-haskell
                       ,lens
+                      ,clay
+                      ,bytestring
+                      ,file-embed
   --if impl(ghcjs)
     --build-depends:      ghcjs-dom-jsffi
   hs-source-dirs:      src
