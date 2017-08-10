@@ -2,6 +2,8 @@
 module App where
 import Base
 import qualified Data.Map as M
+import JSDOM.HTMLElement (focus)
+{-import GHCJS.DOM.HTMLElement (focus)-}
 
 app :: MonadWidget t m => m ()
 {-app = return ()-}
@@ -27,7 +29,10 @@ renderNote k note = li_ $ do
     renderEdit = do
       initText <- sample (current note)
       t <- textInput $ def & textInputConfig_initialValue .~ initText
-      let editedValue = (_textInput_value t) `tagPromptlyDyn` keypress Enter t
+      pb <- getPostBuild >>= delay 0.1
+      performEvent $ (focus (_textInput_element t) <$) pb
+      let endEdit = leftmost [keypress Enter t, domEvent Blur t]
+      let editedValue = (_textInput_value t) `tagPromptlyDyn` endEdit
       tellEvent (setNote k <$> editedValue)
       return editedValue
     renderStaticNote = do

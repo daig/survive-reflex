@@ -15,6 +15,9 @@ build-type:          Simple
 -- extra-source-files:  
 cabal-version:       >=1.10
 
+--Flag GHCJS
+  --Default: False
+
 library
   hs-source-dirs:      src
   exposed-modules:     App
@@ -23,18 +26,34 @@ library
   build-depends:       base >=4.8 && <5
                       ,reflex
                       ,reflex-dom-core
+                      ,jsaddle
+                      ,jsaddle-dom >= 0.9 && < 10
                       ,jsaddle-warp
                       ,text
                       ,containers
                       ,template-haskell
                       ,lens
+  --if impl(ghcjs)
+    --build-depends:      ghcjs-dom-jsffi
   default-language:    Haskell2010
   default-extensions:  OverloadedStrings,ViewPatterns,LambdaCase,FlexibleContexts,TypeFamilies
 
---executable kanban
-  --main-is:             Main.hs
-  ---- other-modules:       
-  ---- other-extensions:    
-  --build-depends:       base >=4.8 && <5
-  --hs-source-dirs:      src
-  --default-language:    Haskell2010
+executable kanban
+  main-is:             Main.hs
+  -- other-modules:       
+  -- other-extensions:    
+  build-depends:       base >=4.8 && <5
+                      ,reflex
+                      ,reflex-dom-core
+                      ,jsaddle
+                      ,jsaddle-dom >= 0.9 && < 10
+                      ,jsaddle-warp
+                      ,text
+                      ,containers
+                      ,template-haskell
+                      ,lens
+  --if impl(ghcjs)
+    --build-depends:      ghcjs-dom-jsffi
+  hs-source-dirs:      src
+  default-language:    Haskell2010
+  default-extensions:  OverloadedStrings,ViewPatterns,LambdaCase,FlexibleContexts,TypeFamilies
